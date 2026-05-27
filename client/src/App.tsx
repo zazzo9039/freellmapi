@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, NavLink } from 'react-router-do
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import KeysPage from '@/pages/KeysPage'
+import ChatPage from '@/pages/ChatPage'
 import PlaygroundPage from '@/pages/PlaygroundPage'
 import FallbackPage from '@/pages/FallbackPage'
 import AnalyticsPage from '@/pages/AnalyticsPage'
@@ -76,6 +77,7 @@ function App() {
               <Brand />
               <nav className="flex items-center gap-6 ml-10">
                 <NavItem to="/playground">Playground</NavItem>
+                <NavItem to="/chat">Chat</NavItem>
                 <NavItem to="/keys">Keys</NavItem>
                 <NavItem to="/fallback">Fallback</NavItem>
                 <NavItem to="/analytics">Analytics</NavItem>
@@ -89,6 +91,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/playground" replace />} />
               <Route path="/playground" element={<PlaygroundPage />} />
+              <Route path="/chat" element={<ChatPage />} />
               <Route path="/keys" element={<KeysPage />} />
               <Route path="/fallback" element={<FallbackPage />} />
               <Route path="/analytics" element={<AnalyticsPage />} />
