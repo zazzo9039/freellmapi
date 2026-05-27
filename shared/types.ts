@@ -226,3 +226,25 @@ export interface RateLimitStatus {
   available: boolean;
   nextResetAt: string | null;
 }
+
+// ---- Conversation Persistence Types ----
+
+export interface Conversation {
+  id: number;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ChatMessageRecord {
+  id: number;
+  conversationId: number;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  meta?: {
+    platform?: string;
+    model?: string;
+    latency?: number;
+  };
+  createdAt: string;
+}
