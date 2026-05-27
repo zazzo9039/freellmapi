@@ -147,3 +147,13 @@
         font-feature-settings: 'ss01';
     }
 }
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+}

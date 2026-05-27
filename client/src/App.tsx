@@ -73,21 +73,21 @@ function App() {
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <div className="min-h-screen bg-background">
           <header className="sticky top-0 z-40 bg-background/80 backdrop-blur border-b">
-            <div className="max-w-6xl mx-auto px-6 flex items-center">
+            <div className="max-w-6xl mx-auto px-3 sm:px-6 flex items-center gap-2">
               <Brand />
-              <nav className="flex items-center gap-6 ml-10">
+              <nav className="flex items-center gap-4 sm:gap-6 ml-3 sm:ml-10 overflow-x-auto no-scrollbar min-w-0 flex-1">
                 <NavItem to="/playground">Playground</NavItem>
                 <NavItem to="/chat">Chat</NavItem>
                 <NavItem to="/keys">Keys</NavItem>
                 <NavItem to="/fallback">Fallback</NavItem>
                 <NavItem to="/analytics">Analytics</NavItem>
               </nav>
-              <div className="ml-auto py-2">
+              <div className="ml-auto py-2 shrink-0">
                 <DarkModeToggle />
               </div>
             </div>
           </header>
-          <main className="max-w-6xl mx-auto px-6 py-8">
+          <main className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
             <Routes>
               <Route path="/" element={<Navigate to="/playground" replace />} />
               <Route path="/playground" element={<PlaygroundPage />} />
