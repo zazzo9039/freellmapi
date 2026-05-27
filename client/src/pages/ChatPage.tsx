@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { PageHeader } from '@/components/page-header'
 import type { Conversation, ChatMessageRecord } from '../../../shared/types'
 
 interface FallbackEntry {
@@ -255,33 +256,23 @@ export default function ChatPage() {
     : 'Chat'
 
   return (
-    <div className="flex flex-col h-dvh">
-      {/* === Top Bar === */}
-      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur border-b px-3 md:px-6">
-        <div className="flex items-center gap-2 h-12 md:h-14">
-          {/* Hamburger (mobile) / hidden on desktop — sidebar is always visible */}
-          <button
-            onClick={() => setSidebarOpen(v => !v)}
-            className="md:hidden flex items-center justify-center size-9 -ml-1 rounded-md hover:bg-muted touch-manipulation"
-            aria-label="Toggle conversations"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 12h18" /><path d="M3 6h18" /><path d="M3 18h18" />
-            </svg>
-          </button>
-
-          {/* Title */}
-          <h1 className="font-semibold text-sm md:text-base truncate min-w-0">
-            {activeConversationId ? conversationTitle : 'Chat'}
-          </h1>
-
-          {/* Spacer */}
-          <div className="flex-1" />
-
-          {/* Model selector — desktop: full select */}
-          <div className="hidden md:block">
+    <div className="flex flex-col h-[calc(100vh-8rem)]">
+      <PageHeader
+        title="Chat"
+        description="Persistent conversations routed through your fallback chain."
+        actions={
+          <>
+            <button
+              onClick={() => setSidebarOpen(v => !v)}
+              className="md:hidden flex items-center justify-center size-9 rounded-md hover:bg-muted touch-manipulation"
+              aria-label="Toggle conversations"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12h18" /><path d="M3 6h18" /><path d="M3 18h18" />
+              </svg>
+            </button>
             <Select value={selectedModel} onValueChange={(v) => setSelectedModel(v ?? 'auto')}>
-              <SelectTrigger className="w-[200px] h-8 text-xs">
+              <SelectTrigger className="w-[260px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -296,39 +287,14 @@ export default function ChatPage() {
                 ))}
               </SelectContent>
             </Select>
-          </div>
+            <Button variant="outline" size="sm" onClick={handleNewConversation}>
+              + New
+            </Button>
+          </>
+        }
+      />
 
-          {/* Mobile model: native compact select */}
-          <div className="md:hidden">
-            <select
-              value={selectedModel}
-              onChange={e => setSelectedModel(e.target.value)}
-              className="h-8 rounded-md border bg-background px-2 text-xs max-w-[110px] truncate"
-            >
-              <option value="auto">Auto</option>
-              {availableModels.map(m => (
-                <option key={m.modelDbId} value={m.modelId}>{m.displayName}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* New conversation button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-9"
-            onClick={handleNewConversation}
-            aria-label="New conversation"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14" /><path d="M12 5v14" />
-            </svg>
-          </Button>
-        </div>
-      </div>
-
-      {/* === Main layout: sidebar + chat === */}
-      <div className="flex-1 flex overflow-hidden min-h-0 relative">
+      <div className="flex-1 flex rounded-lg border bg-card overflow-hidden min-h-0 relative">
         {/* Sidebar overlay backdrop (mobile only) */}
         {sidebarOpen && (
           <div
@@ -419,13 +385,13 @@ export default function ChatPage() {
         {/* === Chat area === */}
         <div className="flex-1 flex flex-col min-h-0 min-w-0">
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-3 md:px-6 py-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {activeConversationId === null ? (
               <div className="flex items-center justify-center h-full text-center">
-                <div className="space-y-2 max-w-sm px-4">
+                <div className="space-y-2 max-w-sm">
                   <p className="text-base font-medium">Send a message to get started.</p>
                   <p className="text-sm text-muted-foreground">
-                    Using <span className="text-foreground">{activeModelLabel}</span>.
+                    Using <span className="text-foreground">{activeModelLabel}</span>. Switch models in the selector above.
                   </p>
                 </div>
               </div>
@@ -435,7 +401,7 @@ export default function ChatPage() {
               </div>
             ) : displayMessages.length === 0 ? (
               <div className="flex items-center justify-center h-full text-center">
-                <div className="space-y-2 max-w-sm px-4">
+                <div className="space-y-2 max-w-sm">
                   <p className="text-base font-medium">Empty conversation.</p>
                   <p className="text-sm text-muted-foreground">Send a message to start.</p>
                 </div>
@@ -445,12 +411,13 @@ export default function ChatPage() {
                 {displayMessages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div
-                      className={`max-w-[85%] md:max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${msg.role === 'user'
+                      className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                        msg.role === 'user'
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-muted'
-                        }`}
+                      }`}
                     >
-                      <div className="whitespace-pre-wrap break-words">{msg.content}</div>
+                      <div className="whitespace-pre-wrap">{msg.content}</div>
                       {msg.meta && (
                         <div className="flex items-center gap-2 mt-2 flex-wrap text-[11px] opacity-70 tabular-nums">
                           {msg.meta.platform && <span>{msg.meta.platform}</span>}
@@ -481,16 +448,16 @@ export default function ChatPage() {
           </div>
 
           {/* Bottom input bar */}
-          <div className="border-t bg-background/95 backdrop-blur p-2 md:p-3">
-            <div className="flex gap-2 items-end max-w-4xl mx-auto">
+          <div className="border-t bg-background/50 p-3">
+            <div className="flex gap-2 items-end">
               <textarea
                 ref={inputRef}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type a message…"
+                placeholder="Type a message… (⏎ to send, ⇧⏎ for newline)"
                 rows={1}
-                className="flex-1 resize-none rounded-xl border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 min-h-[44px] max-h-[160px] leading-relaxed"
+                className="flex-1 resize-none rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 min-h-[40px] max-h-[160px]"
                 style={{ height: 'auto', overflow: 'hidden' }}
                 onInput={e => {
                   const el = e.target as HTMLTextAreaElement
@@ -498,23 +465,8 @@ export default function ChatPage() {
                   el.style.height = Math.min(el.scrollHeight, 160) + 'px'
                 }}
               />
-              <Button
-                onClick={handleSend}
-                disabled={loading || !input.trim()}
-                size="icon"
-                className="size-[44px] shrink-0 rounded-xl"
-                aria-label="Send message"
-              >
-                {loading ? (
-                  <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 2 11 13" />
-                    <path d="m22 2-7 20-4-9-9-4 20-7Z" />
-                  </svg>
-                )}
+              <Button onClick={handleSend} disabled={loading || !input.trim()} size="default">
+                {loading ? 'Sending…' : 'Send'}
               </Button>
             </div>
           </div>
